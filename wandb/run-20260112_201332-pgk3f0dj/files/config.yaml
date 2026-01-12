@@ -1,0 +1,55 @@
+_wandb:
+    value:
+        cli_version: 0.23.1
+        e:
+            arge65n0cpv8qrn0zh6o23o94u09cxb1:
+                args:
+                    - --data-dir
+                    - data/processed/train
+                    - --backbone
+                    - densenet112
+                codePath: src/xray_image_classifier/train.py
+                codePathLocal: src/xray_image_classifier/train.py
+                email: ritammoreiradasilva@gmail.com
+                executable: /Users/rita/Documents/MLOPs/MLOps_88/.venv/bin/python3
+                git:
+                    commit: c069cb630226738c6a347136ee84a15a597dfdc3
+                    remote: https://github.com/SamuelTavares8/MLOps_88.git
+                host: MacBook-Pro-de-Rita.local
+                os: macOS-26.2-arm64-arm-64bit-Mach-O
+                program: /Users/rita/Documents/MLOPs/MLOps_88/src/xray_image_classifier/train.py
+                python: CPython 3.13.11
+                root: /Users/rita/Documents/MLOPs/MLOps_88
+                startedAt: "2026-01-12T19:13:32.463237Z"
+                writerId: arge65n0cpv8qrn0zh6o23o94u09cxb1
+        m: []
+        python_version: 3.13.11
+        t:
+            "1":
+                - 1
+                - 41
+                - 48
+                - 105
+            "2":
+                - 1
+                - 41
+                - 48
+                - 105
+            "3":
+                - 16
+            "4": 3.13.11
+            "5": 0.23.1
+            "12": 0.23.1
+            "13": darwin-arm64
+backbone:
+    value: densenet112
+batch_size:
+    value: 16
+device:
+    value: mps
+epochs_phase1:
+    value: 5
+epochs_phase2:
+    value: 5
+num_classes:
+    value: 4
