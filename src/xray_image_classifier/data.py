@@ -2,9 +2,11 @@ from pathlib import Path
 from typing import Iterable
 
 import typer
+from .data import app as data_app
 from PIL import Image
 
-app = typer.Typer()
+app = typer.Typer(help="xray_image_classifier CLI")
+app.add_typer(data_app, name="data")
 
 SPLITS: Iterable[str] = ("train", "val", "test")
 IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg")
