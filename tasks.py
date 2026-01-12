@@ -13,9 +13,20 @@ def preprocess_data(ctx: Context) -> None:
     ctx.run(f"uv run src/{PROJECT_NAME}/data.py data/raw data/processed", echo=True, pty=not WINDOWS)
 
 @task
-def train(ctx: Context) -> None:
+def train(ctx: Context, backbone: str = "densenet121") -> None:
     """Train model."""
-    ctx.run(f"uv run src/{PROJECT_NAME}/train.py", echo=True, pty=not WINDOWS)
+    ctx.run(f"uv run src/{PROJECT_NAME}/train.py "
+            f"--data-dir data/processed/train "
+            f"--backbone {backbone}",                
+            echo=True, pty=not WINDOWS)
+    
+@task
+def evaluate(ctx: Context, backbone: str = "densenet121") -> None:
+    """Evaluate model."""
+    ctx.run(f"uv run src/{PROJECT_NAME}/evaluate.py "
+            f"--data-dir data/processed/test "
+            f"--backbone {backbone}",           
+            echo=True, pty=not WINDOWS)
 
 @task
 def test(ctx: Context) -> None:

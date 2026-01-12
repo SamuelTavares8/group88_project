@@ -1,0 +1,23 @@
+{
+  "os": "macOS-26.2-arm64-arm-64bit-Mach-O",
+  "python": "CPython 3.13.11",
+  "startedAt": "2026-01-12T19:13:32.463237Z",
+  "args": [
+    "--data-dir",
+    "data/processed/train",
+    "--backbone",
+    "densenet112"
+  ],
+  "program": "/Users/rita/Documents/MLOPs/MLOps_88/src/xray_image_classifier/train.py",
+  "codePath": "src/xray_image_classifier/train.py",
+  "codePathLocal": "src/xray_image_classifier/train.py",
+  "git": {
+    "remote": "https://github.com/SamuelTavares8/MLOps_88.git",
+    "commit": "c069cb630226738c6a347136ee84a15a597dfdc3"
+  },
+  "email": "ritammoreiradasilva@gmail.com",
+  "root": "/Users/rita/Documents/MLOPs/MLOps_88",
+  "host": "MacBook-Pro-de-Rita.local",
+  "executable": "/Users/rita/Documents/MLOPs/MLOps_88/.venv/bin/python3",
+  "writerId": "arge65n0cpv8qrn0zh6o23o94u09cxb1"
+}
