@@ -8,6 +8,16 @@ PYTHON_VERSION = "3.13"
 
 # Project commands
 @task
+def lint(ctx: Context) -> None:
+    """Run linter (ruff)."""
+    ctx.run("uv run ruff .", echo=True, pty=not WINDOWS)
+
+@task
+def typecheck(ctx: Context) -> None:
+    """Run static type checks (mypy)."""
+    ctx.run("uv run mypy src", echo=True, pty=not WINDOWS)
+
+@task
 def preprocess_data(ctx: Context) -> None:
     """Preprocess data."""
     ctx.run(f"uv run src/{PROJECT_NAME}/data.py data/raw data/processed", echo=True, pty=not WINDOWS)
