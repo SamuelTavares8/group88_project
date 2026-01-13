@@ -34,7 +34,7 @@ class XRayClassifier(nn.Module):
         Number of output classes.
     in_channels : int, optional
         Number of input channels. Use 1 for grayscale X-rays,
-        3 if images are RGB. 
+        3 if images are RGB.
     backbone : str, optional
         Backbone architecture to use. Supported:
         {"densenet121", "efficientnet-b0"}.
@@ -95,10 +95,7 @@ class XRayClassifier(nn.Module):
                 pretrained=pretrained,
             )
 
-        raise ValueError(
-            f"Unsupported backbone '{backbone}'. "
-            "Choose from {'densenet121', 'efficientnet-b0'}."
-        )
+        raise ValueError(f"Unsupported backbone '{backbone}'. " "Choose from {'densenet121', 'efficientnet-b0'}.")
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -157,15 +154,8 @@ class XRayClassifier(nn.Module):
 
         elif self.backbone_name.startswith("efficientnet"):
             for name, param in self.model.named_parameters():
-                if (
-                    name.startswith("_blocks.6")
-                    or name.startswith("_conv_head")
-                    or name.startswith("_fc")
-                ):
+                if name.startswith("_blocks.6") or name.startswith("_conv_head") or name.startswith("_fc"):
                     param.requires_grad = True
-        
-
-
 
 
 if __name__ == "__tmain__":
@@ -223,4 +213,3 @@ if __name__ == "__tmain__":
             print("TRAINABLE:", name)
             total += p.numel()
     print(f"Total trainable parameters: {total:,}")
-

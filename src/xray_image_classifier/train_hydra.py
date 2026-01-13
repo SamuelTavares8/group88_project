@@ -46,13 +46,7 @@ LOGGER = logging.getLogger(__name__)
 # -----------------------------------------------------------------------------
 # Device
 # -----------------------------------------------------------------------------
-DEVICE = torch.device(
-    "cuda"
-    if torch.cuda.is_available()
-    else "mps"
-    if torch.backends.mps.is_available()
-    else "cpu"
-)
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
 # -----------------------------------------------------------------------------
 # Paths
@@ -65,6 +59,7 @@ TB_DIR = Path("reports/tensorboard")
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 TB_DIR.mkdir(parents=True, exist_ok=True)
+
 
 # -----------------------------------------------------------------------------
 # Dataset
@@ -102,6 +97,7 @@ def build_dataloader(data_dir: Path, batch_size: int) -> DataLoader:
         pin_memory=torch.cuda.is_available(),
     )
 
+
 def build_optimizer(cfg, model, phase: int):
     if phase == 1:
         lr = cfg.optimizer.lr_phase1
@@ -110,11 +106,6 @@ def build_optimizer(cfg, model, phase: int):
         lr = cfg.optimizer.lr_phase2
         wd = cfg.optimizer.weight_decay
 
-    return torch.optim.Adam(
-        filter(lambda p: p.requires_grad, model.parameters()),
-        lr=lr,
-        weight_decay=wd,
-    )
 
 def set_seed(seed: int) -> None:
     import random
@@ -127,6 +118,7 @@ def set_seed(seed: int) -> None:
 
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
 
 # -----------------------------------------------------------------------------
 # Training
@@ -174,10 +166,10 @@ def train(cfg: DictConfig) -> None:
 
         model.freeze_backbone()
 
-        #optimizer = torch.optim.Adam(
+        # optimizer = torch.optim.Adam(
         #    filter(lambda p: p.requires_grad, model.parameters()),
         #    lr=cfg.training.lr_phase1,
-        #)
+        # )
 
         optimizer = build_optimizer(cfg, model, phase=1)
 
@@ -191,14 +183,11 @@ def train(cfg: DictConfig) -> None:
                 active=3,
                 repeat=1,
             ),
-            on_trace_ready=tensorboard_trace_handler(
-                TB_DIR / cfg.model.backbone
-            ),
+            on_trace_ready=tensorboard_trace_handler(TB_DIR / cfg.model.backbone),
             record_shapes=False,
             profile_memory=False,
             with_stack=False,
         ) as prof:
-
             for batch in train_loader:
                 x = batch["image"].to(DEVICE)
                 y = batch["label"].to(DEVICE)
@@ -225,10 +214,10 @@ def train(cfg: DictConfig) -> None:
     LOGGER.info("Phase 1: Training classifier head")
     model.freeze_backbone()
 
-    #optimizer = torch.optim.Adam(
+    # optimizer = torch.optim.Adam(
     #    filter(lambda p: p.requires_grad, model.parameters()),
     #    lr=cfg.training.lr_phase1,
-    #)
+    # )
 
     optimizer = build_optimizer(cfg, model, phase=1)
 
@@ -281,10 +270,10 @@ def train(cfg: DictConfig) -> None:
     LOGGER.info("Phase 2: Fine-tuning (%s)", cfg.model.backbone)
     model.unfreeze_for_finetuning()
 
-    #optimizer = torch.optim.Adam(
+    # optimizer = torch.optim.Adam(
     #    filter(lambda p: p.requires_grad, model.parameters()),
     #    lr=cfg.training.lr_phase2,
-    #)
+    # )
 
     optimizer = build_optimizer(cfg, model, phase=2)
 
@@ -366,6 +355,7 @@ def train(cfg: DictConfig) -> None:
     wandb.finish()
 
     LOGGER.info("Training finished successfully")
+
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":

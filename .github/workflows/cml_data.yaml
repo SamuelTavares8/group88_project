@@ -1,0 +1,47 @@
+name: Data Change Pipeline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.dvc"
+      - "dvc.lock"
+      - ".dvc/**"
+
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.dvc"
+      - "dvc.lock"
+      - ".dvc/**"
+
+jobs:
+  data_changed:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install uv
+        run: |
+          python -m pip install -U pip
+          pip install uv
+
+      - name: Install project dependencies
+        run: |
+          uv sync --all-groups
+
+      - name: Pull data with DVC
+        run: |
+          uv run dvc pull --no-run-cache
+
+      - name: Trigger downstream step
+        run: |
+          echo "✅ Data has changed. Triggering pipeline..."

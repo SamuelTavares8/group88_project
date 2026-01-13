@@ -1,12 +1,10 @@
 from pathlib import Path
-import sys
 from typing import Dict
 
 from PIL import Image
 import pytest
 import torch
 
-from tests import _PATH_SRC
 import xray_image_classifier.train as train_module
 
 
