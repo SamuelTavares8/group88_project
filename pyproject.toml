@@ -63,3 +63,8 @@ line-length = 120
 
 [tool.coverage.run]
 omit = ["tests/*"]
+source = ["xray_image_classifier"]
+
+
+[tool.coverage.report]
+show_missing = true
