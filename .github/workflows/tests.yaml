@@ -14,14 +14,14 @@ jobs:
     strategy:
       matrix:
         operating-system: ["ubuntu-latest", "windows-latest", "macos-latest"]
-        python-version: ["3.13", "3.12", "3.11"]
+        python-version: ["3.12", "3.11"]
+        torch-version: ["2.1.2", "2.2.1"]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
-      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -38,3 +38,5 @@ jobs:
         run: |
           coverage run -m pytest tests/
           coverage report -m
+
+          name: Unit Tests

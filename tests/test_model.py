@@ -50,9 +50,7 @@ def test_freeze_backbone_densenet121() -> None:
 
     named_params = dict(model.model.named_parameters())
     head_params = _params_by_prefix(named_params, ("class_layers",))
-    frozen_params = [
-        p for name, p in named_params.items() if not name.startswith(("class_layers",))
-    ]
+    frozen_params = [p for name, p in named_params.items() if not name.startswith(("class_layers",))]
 
     assert head_params
     assert all(param.requires_grad for param in head_params)
@@ -72,9 +70,7 @@ def test_freeze_backbone_efficientnet() -> None:
 
     named_params = dict(model.model.named_parameters())
     head_params = _params_by_prefix(named_params, ("_fc",))
-    frozen_params = [
-        p for name, p in named_params.items() if not name.startswith(("_fc",))
-    ]
+    frozen_params = [p for name, p in named_params.items() if not name.startswith(("_fc",))]
 
     assert head_params
     assert all(param.requires_grad for param in head_params)
@@ -96,9 +92,7 @@ def test_unfreeze_for_finetuning_densenet121() -> None:
     named_params = dict(model.model.named_parameters())
     finetune_params = _params_by_prefix(named_params, ("features.denseblock4",))
     other_params = [
-        p
-        for name, p in named_params.items()
-        if not name.startswith(("features.denseblock4", "class_layers"))
+        p for name, p in named_params.items() if not name.startswith(("features.denseblock4", "class_layers"))
     ]
 
     assert finetune_params
@@ -121,9 +115,7 @@ def test_unfreeze_for_finetuning_efficientnet() -> None:
     named_params = dict(model.model.named_parameters())
     finetune_prefixes = ("_blocks.6", "_conv_head", "_fc")
     finetune_params = _params_by_prefix(named_params, finetune_prefixes)
-    other_params = [
-        p for name, p in named_params.items() if not name.startswith(finetune_prefixes)
-    ]
+    other_params = [p for name, p in named_params.items() if not name.startswith(finetune_prefixes)]
 
     assert finetune_params
     assert all(param.requires_grad for param in finetune_params)

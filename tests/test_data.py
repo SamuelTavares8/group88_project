@@ -49,7 +49,6 @@ def test_preprocess_split_creates_outputs(tmp_path: Path):
     assert processed_img.exists()
 
 
-
 def test_preprocess_raises_on_missing_split(tmp_path: Path):
     raw_dir = tmp_path / "raw"
     processed_dir = tmp_path / "processed"
