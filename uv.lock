@@ -3049,6 +3049,7 @@ source = { editable = "." }
 dependencies = [
     { name = "dvc", extra = ["gdrive"] },
     { name = "fastapi" },
+    { name = "hydra-core" },
     { name = "matplotlib" },
     { name = "monai" },
     { name = "torch", version = "2.6.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'darwin'" },
@@ -3077,6 +3078,7 @@ dev = [
 requires-dist = [
     { name = "dvc", extras = ["gdrive"], specifier = ">=3.66.1" },
     { name = "fastapi", specifier = "==0.115.6" },
+    { name = "hydra-core", specifier = ">=1.3.2" },
     { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "monai", specifier = ">=1.5.1" },
     { name = "torch", specifier = "==2.6.0", index = "https://download.pytorch.org/whl/cpu" },

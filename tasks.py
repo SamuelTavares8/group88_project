@@ -13,13 +13,16 @@ def preprocess_data(ctx: Context) -> None:
     ctx.run(f"uv run src/{PROJECT_NAME}/data.py data/raw data/processed", echo=True, pty=not WINDOWS)
 
 @task
-def train(ctx: Context, backbone: str = "densenet121") -> None:
+def train(ctx: Context, backbone: str = "densenet121", profile: bool = False) -> None:
     """Train model."""
-    ctx.run(f"uv run src/{PROJECT_NAME}/train.py "
-            f"--data-dir data/processed/train "
-            f"--backbone {backbone}",                
-            echo=True, pty=not WINDOWS)
-    
+    cmd = ( f"uv run src/{PROJECT_NAME}/train.py "
+        f"--data-dir data/processed/train "
+        f"--backbone {backbone}"
+    )
+    if profile:
+        cmd += " --profile"
+    ctx.run(cmd, echo=True, pty=not WINDOWS)
+
 @task
 def evaluate(ctx: Context, backbone: str = "densenet121") -> None:
     """Evaluate model."""

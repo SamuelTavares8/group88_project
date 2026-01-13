@@ -15,9 +15,9 @@ import logging
 from pathlib import Path
 import matplotlib.pyplot as plt
 
+
 import torch
 from torch.profiler import profile, record_function, ProfilerActivity, tensorboard_trace_handler
-from torch.utils.tensorboard import SummaryWriter
 import typer
 import wandb
 from monai.data import DataLoader, Dataset
@@ -130,42 +130,29 @@ def train(
         "--backbone",
         help="Model backbone: densenet121 or efficientnet-b0",
     ),
+    profile_run: bool = typer.Option(
+        False,
+        "--profile",
+        help="Run a short profiling session before training",
+    ),
     batch_size: int = 16,
     epochs_phase1: int = 5,
     epochs_phase2: int = 5,
 ) -> None:
+
     """
     Train the X-ray classifier using a two-phase fine-tuning strategy.
     """
-    LOGGER.info("Starting training")
+
     LOGGER.info("Device: %s", DEVICE)
 
     train_loader = build_dataloader(data_dir, batch_size)
-    LOGGER.info("Training batches: %d", len(train_loader))
 
-    # Initialize TorchProfiler
-    tb_logdir = Path("reports/tensorboard") / backbone
-    tb_logdir.mkdir(parents=True, exist_ok=True)
-
-    PROFILE_STEPS = 20
-
-    # ---------------- W&B init ----------------
-    wandb.init(
-        project="xray-classification",
-        config={
-            "batch_size": batch_size,
-            "epochs_phase1": epochs_phase1,
-            "epochs_phase2": epochs_phase2,
-            "backbone": backbone,
-            "num_classes": 4,
-            "device": str(DEVICE),
-        },
-    )
 
     model = XRayClassifier(
         num_classes=4,
         in_channels=3,
-        backbone= backbone,
+        backbone=backbone,
         pretrained=True,
     ).to(DEVICE)
 
@@ -174,41 +161,36 @@ def train(
     train_loss: list[float] = []
     train_acc: list[float] = []
 
-    # -------------------------------------------------------------------------
-    # Phase 1: Feature extraction
-    # -------------------------------------------------------------------------
-    LOGGER.info("Phase 1: Training classifier head")
-    model.freeze_backbone()
+    if profile_run:
+        LOGGER.warning("Running Profiling only (no training)")
 
-    optimizer = torch.optim.Adam(
-        filter(lambda p: p.requires_grad, model.parameters()),
-        lr=1e-3,
-    )
+        tb_logdir = Path("reports/tensorboard") / backbone
+        tb_logdir.mkdir(parents=True, exist_ok=True)
 
-    step = 0
+        model.freeze_backbone()
 
-    with profile(
-        activities=[
-            ProfilerActivity.CPU,
-            ProfilerActivity.CUDA if torch.cuda.is_available() else ProfilerActivity.CPU,
-        ],
-        schedule=torch.profiler.schedule(
-            wait=1,
-            warmup=1,
-            active=3,
-            repeat=1,
-        ),
-        on_trace_ready=tensorboard_trace_handler(
-            tb_logdir
-        ),
-        record_shapes=True,
-        profile_memory=True,
-        with_stack=True,
-    ) as prof:
+        optimizer = Adam(
+            filter(lambda p: p.requires_grad, model.parameters()),
+            lr=1e-3,
+        )
 
-        for epoch in range(epochs_phase1):
-            model.train()
-            epoch_loss, epoch_acc = 0.0, 0.0
+        model.train()
+
+        with profile(
+            activities=[
+                ProfilerActivity.CPU
+            ],
+            schedule=torch.profiler.schedule(
+               wait=1,
+                warmup=1,
+                active=3,
+                repeat=1,
+            ),
+            on_trace_ready=tensorboard_trace_handler(tb_logdir),
+            record_shapes=True,
+            profile_memory=True,
+            with_stack=False,
+        ) as prof:
 
             for batch in train_loader:
                 x = batch["image"].to(DEVICE)
@@ -224,45 +206,85 @@ def train(
                     loss.backward()
                     optimizer.step()
 
-                acc = (logits.argmax(dim=1) == y).float().mean().item()
-                epoch_loss += loss.item()
-                epoch_acc += acc
-
                 prof.step()
-                step += 1
 
-                 # profile only a few batches
-                if epoch == 0 and step >= 5:
-                    break
+        LOGGER.info("Profiling finished. TensorBoard traces saved.")
+        return
+    
+    LOGGER.info("Starting training")
+    LOGGER.info("Training batches: %d", len(train_loader))
 
-            epoch_loss /= len(train_loader)
-            epoch_acc /= len(train_loader)
+     # ---------------- W&B init ----------------
+    wandb.init(
+        project="xray-classification",
+        config={
+            "batch_size": batch_size,
+            "epochs_phase1": epochs_phase1,
+            "epochs_phase2": epochs_phase2,
+            "backbone": backbone,
+            "num_classes": 4,
+            "device": str(DEVICE),
+        },
+    )
 
-            train_loss.append(epoch_loss)
-            train_acc.append(epoch_acc)
+    # -------------------------------------------------------------------------
+    # Phase 1: Feature extraction
+    # -------------------------------------------------------------------------
+    LOGGER.info("Phase 1: Training classifier head")
+    model.freeze_backbone()
 
-            LOGGER.info(
-                "[Phase 1] Epoch %d/%d | loss=%.4f | acc=%.4f",
-                epoch + 1,
-                epochs_phase1,
-                epoch_loss,
-                epoch_acc,
-            )
-
-            wandb.log(
-                {
-                    "phase": "classifier",
-                    "epoch": epoch + 1,
-                    "train/loss": epoch_loss,
-                    "train/accuracy": epoch_acc,
-                }
-            )
+    optimizer = torch.optim.Adam(
+        filter(lambda p: p.requires_grad, model.parameters()),
+        lr=1e-3,
+    )
 
 
+    for epoch in range(epochs_phase1):
+        model.train()
+        epoch_loss, epoch_acc = 0.0, 0.0
+
+        for batch in train_loader:
+            x = batch["image"].to(DEVICE)
+            y = batch["label"].to(DEVICE)
+
+            optimizer.zero_grad()
+
+            #with record_function("forward"):
+            logits = model(x)
+            loss = loss_fn(logits, y)
+
+            #with record_function("backward"):
+            loss.backward()
+            optimizer.step()
+            acc = (logits.argmax(dim=1) == y).float().mean().item()
+            epoch_loss += loss.item()
+            epoch_acc += acc
+
+        epoch_loss /= len(train_loader)
+        epoch_acc /= len(train_loader)
+
+        train_loss.append(epoch_loss)
+        train_acc.append(epoch_acc)
+
+        LOGGER.info(
+            "[Phase 1] Epoch %d/%d | loss=%.4f | acc=%.4f",
+            epoch + 1,
+            epochs_phase1,
+            epoch_loss,
+            epoch_acc,
+        )
+        wandb.log(
+            {
+                "phase": "classifier",
+                "epoch": epoch + 1,
+                "train/loss": epoch_loss,
+                "train/accuracy": epoch_acc,
+            }
+        )
     # -------------------------------------------------------------------------
     # Phase 2: Light fine-tuning
     # -------------------------------------------------------------------------
-    LOGGER.info("Phase 2: Fine-tuning last DenseNet block")
+    LOGGER.info("Phase 2: Fine-tuning (%s)", backbone)
     model.unfreeze_for_finetuning()
 
     optimizer = torch.optim.Adam(
@@ -354,8 +376,6 @@ def train(
     LOGGER.info("Training curves saved to %s", fig_path)
     wandb.finish()
     LOGGER.info("Training completed successfully")
-
-    writer.close()
 
 
 # -----------------------------------------------------------------------------
