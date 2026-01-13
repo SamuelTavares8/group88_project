@@ -1,0 +1,73 @@
+_wandb:
+    value:
+        cli_version: 0.23.1
+        e:
+            cllsjli43ee1mt8pbkanak0qt9li90eq:
+                apple:
+                    ecpuCores: 6
+                    gpuCores: 10
+                    memoryGb: 16
+                    name: Apple M5
+                    pcpuCores: 4
+                    ramTotalBytes: "17179869184"
+                    swapTotalBytes: "2147483648"
+                args:
+                    - --data-dir
+                    - data/processed/train
+                    - --backbone
+                    - densenet121
+                codePath: src/xray_image_classifier/train.py
+                codePathLocal: src/xray_image_classifier/train.py
+                cpu_count: 10
+                cpu_count_logical: 10
+                disk:
+                    /:
+                        total: "494332366848"
+                        used: "84817989632"
+                email: ritammoreiradasilva@gmail.com
+                executable: /Users/rita/Documents/MLOPs/MLOps_88/.venv/bin/python3
+                git:
+                    commit: 4752276698e82f0a34093590dcf1ce4463004933
+                    remote: https://github.com/SamuelTavares8/MLOps_88.git
+                host: MacBook-Pro-de-Rita.local
+                memory:
+                    total: "17179869184"
+                os: macOS-26.2-arm64-arm-64bit-Mach-O
+                program: /Users/rita/Documents/MLOPs/MLOps_88/src/xray_image_classifier/train.py
+                python: CPython 3.13.11
+                root: /Users/rita/Documents/MLOPs/MLOps_88
+                startedAt: "2026-01-13T10:28:17.415328Z"
+                writerId: cllsjli43ee1mt8pbkanak0qt9li90eq
+        m: []
+        python_version: 3.13.11
+        t:
+            "1":
+                - 1
+                - 41
+                - 48
+                - 105
+            "2":
+                - 1
+                - 41
+                - 48
+                - 105
+            "3":
+                - 2
+                - 3
+                - 16
+            "4": 3.13.11
+            "5": 0.23.1
+            "12": 0.23.1
+            "13": darwin-arm64
+backbone:
+    value: densenet121
+batch_size:
+    value: 16
+device:
+    value: mps
+epochs_phase1:
+    value: 5
+epochs_phase2:
+    value: 5
+num_classes:
+    value: 4
