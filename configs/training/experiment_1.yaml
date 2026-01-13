@@ -8,4 +8,4 @@ freeze:
   phase1: classifier
   phase2: partial
 
-log_every: 1 
+log_every: 1

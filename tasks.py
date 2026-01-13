@@ -30,10 +30,7 @@ def preprocess_data(ctx: Context) -> None:
 def train(ctx: Context, backbone: str = "densenet121", profile: bool = False) -> None:
     """Train model."""
 
-    cmd = ( f"uv run src/{PROJECT_NAME}/train.py "
-        f"--data-dir data/processed/train "
-        f"--backbone {backbone}"
-    )
+    cmd = f"uv run src/{PROJECT_NAME}/train.py " f"--data-dir data/processed/train " f"--backbone {backbone}"
     if profile:
         cmd += " --profile"
     ctx.run(cmd, echo=True, pty=not WINDOWS)

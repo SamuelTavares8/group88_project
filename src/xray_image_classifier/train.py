@@ -28,7 +28,6 @@ from monai.transforms import (
     Resized,
     ScaleIntensityd,
 )
-from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
 
 from xray_image_classifier.model import XRayClassifier
@@ -47,13 +46,7 @@ LOGGER = logging.getLogger(__name__)
 # -----------------------------------------------------------------------------
 # Device
 # -----------------------------------------------------------------------------
-DEVICE = torch.device(
-    "cuda"
-    if torch.cuda.is_available()
-    else "mps"
-    if torch.backends.mps.is_available()
-    else "cpu"
-)
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
 
 # -----------------------------------------------------------------------------
@@ -139,7 +132,6 @@ def train(
     epochs_phase1: int = 5,
     epochs_phase2: int = 5,
 ) -> None:
-
     """
     Train the X-ray classifier using a two-phase fine-tuning strategy.
     """
@@ -147,7 +139,6 @@ def train(
     LOGGER.info("Device: %s", DEVICE)
 
     train_loader = build_dataloader(data_dir, batch_size)
-
 
     model = XRayClassifier(
         num_classes=4,
@@ -177,11 +168,9 @@ def train(
         model.train()
 
         with profile(
-            activities=[
-                ProfilerActivity.CPU
-            ],
+            activities=[ProfilerActivity.CPU],
             schedule=torch.profiler.schedule(
-               wait=1,
+                wait=1,
                 warmup=1,
                 active=3,
                 repeat=1,
@@ -191,7 +180,6 @@ def train(
             profile_memory=True,
             with_stack=False,
         ) as prof:
-
             for batch in train_loader:
                 x = batch["image"].to(DEVICE)
                 y = batch["label"].to(DEVICE)
@@ -210,11 +198,11 @@ def train(
 
         LOGGER.info("Profiling finished. TensorBoard traces saved.")
         return
-    
+
     LOGGER.info("Starting training")
     LOGGER.info("Training batches: %d", len(train_loader))
 
-     # ---------------- W&B init ----------------
+    # ---------------- W&B init ----------------
     wandb.init(
         project="xray-classification",
         config={
@@ -238,7 +226,6 @@ def train(
         lr=1e-3,
     )
 
-
     for epoch in range(epochs_phase1):
         model.train()
         epoch_loss, epoch_acc = 0.0, 0.0
@@ -249,11 +236,11 @@ def train(
 
             optimizer.zero_grad()
 
-            #with record_function("forward"):
+            # with record_function("forward"):
             logits = model(x)
             loss = loss_fn(logits, y)
 
-            #with record_function("backward"):
+            # with record_function("backward"):
             loss.backward()
             optimizer.step()
             acc = (logits.argmax(dim=1) == y).float().mean().item()
