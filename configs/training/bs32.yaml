@@ -1,0 +1,5 @@
+batch_size: 32
+epochs_phase1: 5
+epochs_phase2: 5
+profile: false
+seed: 42

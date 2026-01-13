@@ -1,0 +1,7 @@
+defaults:
+  - /model: efficientnet_b0
+  - /optimizer: adam_light
+  - /training: long
+  - _self_
+
+name: exp4_efficientnet_long

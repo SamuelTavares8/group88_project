@@ -1,0 +1,7 @@
+defaults:
+  - /model: densenet121
+  - /optimizer: adam_strong
+  - /training: bs32
+  - _self_
+
+name: exp3_densenet_regularized

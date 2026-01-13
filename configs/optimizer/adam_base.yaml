@@ -1,0 +1,4 @@
+name: adam
+lr_phase1: 1e-3
+lr_phase2: 1e-4
+weight_decay: 0.0

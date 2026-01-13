@@ -1,0 +1,7 @@
+defaults:
+  - /model: densenet121
+  - /optimizer: adam_base
+  - /training: bs32
+  - _self_
+
+name: exp2_densenet_bs32_adambase

@@ -1,0 +1,40 @@
+{
+  "os": "macOS-26.2-arm64-arm-64bit-Mach-O",
+  "python": "CPython 3.13.11",
+  "startedAt": "2026-01-13T16:56:47.556597Z",
+  "args": [
+    "optimizer.lr_phase1=5e-4"
+  ],
+  "program": "/Users/rita/Documents/MLOPs/MLOps_88/src/xray_image_classifier/train_hydra.py",
+  "codePath": "src/xray_image_classifier/train_hydra.py",
+  "codePathLocal": "src/xray_image_classifier/train_hydra.py",
+  "git": {
+    "remote": "https://github.com/SamuelTavares8/MLOps_88.git",
+    "commit": "8bbd9a9751ec809214c32a46ff19c3bd93caf2a0"
+  },
+  "email": "ritammoreiradasilva@gmail.com",
+  "root": "/Users/rita/Documents/MLOPs/MLOps_88",
+  "host": "MacBook-Pro-de-Rita.local",
+  "executable": "/Users/rita/Documents/MLOPs/MLOps_88/.venv/bin/python3",
+  "cpu_count": 10,
+  "cpu_count_logical": 10,
+  "disk": {
+    "/": {
+      "total": "494332366848",
+      "used": "98489597952"
+    }
+  },
+  "memory": {
+    "total": "17179869184"
+  },
+  "apple": {
+    "name": "Apple M5",
+    "ecpuCores": 6,
+    "pcpuCores": 4,
+    "gpuCores": 10,
+    "memoryGb": 16,
+    "swapTotalBytes": "15032385536",
+    "ramTotalBytes": "17179869184"
+  },
+  "writerId": "onz0j2mblg9s3jgy7vcvoef69u6sdmmz"
+}

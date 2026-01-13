@@ -31,7 +31,7 @@ from monai.transforms import (
 from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
 
-from xray_image_classifier.model import XRayClassifier
+from model import XRayClassifier
 
 # -----------------------------------------------------------------------------
 # CLI app

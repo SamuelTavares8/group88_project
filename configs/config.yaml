@@ -1,8 +1,8 @@
 defaults:
   - model: densenet121
-  - training: default
-  - optimizer: adam_phase1
-  - dataloader: default
+  - training: bs16
+  - optimizer: adam_base
+  - experiment: null
   - _self_
 
 project_name: xray-classification

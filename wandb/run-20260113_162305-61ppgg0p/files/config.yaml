@@ -1,0 +1,62 @@
+_wandb:
+    value:
+        cli_version: 0.23.1
+        e:
+            qhsjw0nlk72xo8bdyoytcblb0a5tug2c:
+                args:
+                    - model.backbone=densenet121
+                codePath: src/xray_image_classifier/train_hydra.py
+                codePathLocal: src/xray_image_classifier/train_hydra.py
+                email: ritammoreiradasilva@gmail.com
+                executable: /Users/rita/Documents/MLOPs/MLOps_88/.venv/bin/python3
+                git:
+                    commit: 8bbd9a9751ec809214c32a46ff19c3bd93caf2a0
+                    remote: https://github.com/SamuelTavares8/MLOps_88.git
+                host: MacBook-Pro-de-Rita.local
+                os: macOS-26.2-arm64-arm-64bit-Mach-O
+                program: /Users/rita/Documents/MLOPs/MLOps_88/src/xray_image_classifier/train_hydra.py
+                python: CPython 3.13.11
+                root: /Users/rita/Documents/MLOPs/MLOps_88
+                startedAt: "2026-01-13T15:23:05.491360Z"
+                writerId: qhsjw0nlk72xo8bdyoytcblb0a5tug2c
+        m: []
+        python_version: 3.13.11
+        t:
+            "1":
+                - 1
+                - 41
+                - 48
+                - 50
+                - 105
+            "2":
+                - 1
+                - 41
+                - 48
+                - 50
+                - 105
+            "3":
+                - 16
+            "4": 3.13.11
+            "5": 0.23.1
+            "12": 0.23.1
+            "13": darwin-arm64
+backbone:
+    value: densenet121
+batch_size:
+    value: 16
+device:
+    value: mps
+epochs_phase1:
+    value: 5
+epochs_phase2:
+    value: 5
+in_channels:
+    value: 3
+num_classes:
+    value: 4
+pretrained:
+    value: true
+profile:
+    value: false
+seed:
+    value: 42

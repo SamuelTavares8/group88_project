@@ -102,38 +102,42 @@ def build_dataloader(data_dir: Path, batch_size: int) -> DataLoader:
         pin_memory=torch.cuda.is_available(),
     )
 
-def build_optimizer(cfg, model):
-    if cfg.optimizer.name == "adam":
-        return torch.optim.Adam(
-            model.parameters(),
-            lr=cfg.optimizer.lr,
-            weight_decay=cfg.optimizer.weight_decay,
-        )
+def build_optimizer(cfg, model, phase: int):
+    if phase == 1:
+        lr = cfg.optimizer.lr_phase1
+        wd = cfg.optimizer.weight_decay
+    else:
+        lr = cfg.optimizer.lr_phase2
+        wd = cfg.optimizer.weight_decay
 
-    if cfg.optimizer.name == "adamw":
-        return torch.optim.AdamW(
-            model.parameters(),
-            lr=cfg.optimizer.lr,
-            weight_decay=cfg.optimizer.weight_decay,
-        )
+    return torch.optim.Adam(
+        filter(lambda p: p.requires_grad, model.parameters()),
+        lr=lr,
+        weight_decay=wd,
+    )
 
-    if cfg.optimizer.name == "sgd":
-        return torch.optim.SGD(
-            model.parameters(),
-            lr=cfg.optimizer.lr,
-            momentum=cfg.optimizer.momentum,
-            weight_decay=cfg.optimizer.weight_decay,
-        )
+def set_seed(seed: int) -> None:
+    import random
+    import numpy as np
+    import torch
 
-    raise ValueError(f"Unknown optimizer {cfg.optimizer.name}")
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 # -----------------------------------------------------------------------------
 # Training
 # -----------------------------------------------------------------------------
-@hydra.main(version_base=None, config_path="../../conf", config_name="config")
+@hydra.main(version_base=None, config_path="../../configs", config_name="config")
 def train(cfg: DictConfig) -> None:
     LOGGER.info("Device: %s", DEVICE)
     LOGGER.info("Backbone: %s", cfg.model.backbone)
+
+    LOGGER.info("Using seed: %d", cfg.training.seed)
+    set_seed(cfg.training.seed)
 
     train_loader = build_dataloader(
         DATA_DIR,
@@ -149,9 +153,12 @@ def train(cfg: DictConfig) -> None:
 
     loss_fn = torch.nn.CrossEntropyLoss()
 
+    run_name = f"train_{cfg.model.backbone}_bs{cfg.training.batch_size}_lr_phase1{cfg.optimizer.lr_phase1}_lr_phase2{cfg.optimizer.lr_phase2}_wd{cfg.optimizer.weight_decay}"
+
     # ---------------- W&B ----------------
     wandb.init(
         project="xray-classification",
+        name=run_name,
         config={
             **cfg.model,
             **cfg.training,
@@ -163,7 +170,7 @@ def train(cfg: DictConfig) -> None:
     # PROFILING ONLY (no training)
     # -------------------------------------------------------------------------
     if cfg.training.profile:
-        LOGGER.warning("Running PROFILING ONLY")
+        LOGGER.warning("Running profiling only")
 
         model.freeze_backbone()
 
@@ -172,7 +179,7 @@ def train(cfg: DictConfig) -> None:
         #    lr=cfg.training.lr_phase1,
         #)
 
-        optimizer = build_optimizer(cfg, model)
+        optimizer = build_optimizer(cfg, model, phase=1)
 
         model.train()
 
@@ -223,7 +230,7 @@ def train(cfg: DictConfig) -> None:
     #    lr=cfg.training.lr_phase1,
     #)
 
-    optimizer = build_optimizer(cfg, model)
+    optimizer = build_optimizer(cfg, model, phase=1)
 
     train_loss, train_acc = [], []
 
@@ -279,7 +286,7 @@ def train(cfg: DictConfig) -> None:
     #    lr=cfg.training.lr_phase2,
     #)
 
-    optimizer = build_optimizer(cfg, model)
+    optimizer = build_optimizer(cfg, model, phase=2)
 
     for epoch in range(cfg.training.epochs_phase2):
         model.train()
@@ -330,8 +337,15 @@ def train(cfg: DictConfig) -> None:
 
     wandb.log_artifact(
         wandb.Artifact(
-            name="xray_classifier",
+            name=f"xray_{cfg.model.backbone}",
             type="model",
+            metadata={
+                "backbone": cfg.model.backbone,
+                "batch_size": cfg.training.batch_size,
+                "epochs_phase1": cfg.training.epochs_phase1,
+                "epochs_phase2": cfg.training.epochs_phase2,
+                "seed": cfg.training.seed,
+            },
         ).add_file(str(model_path))
     )
 
