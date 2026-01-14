@@ -30,7 +30,7 @@ from monai.transforms import (
 )
 from torch.optim import Adam
 
-from model import XRayClassifier
+from xray_image_classifier.model import XRayClassifier
 
 # -----------------------------------------------------------------------------
 # CLI app
