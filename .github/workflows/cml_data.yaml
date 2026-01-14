@@ -38,6 +38,17 @@ jobs:
         run: |
           uv sync --all-groups
 
+      - name: Configure DVC Google Drive authentication
+        run: |
+          echo "${{ secrets.DVC_GDRIVE_SERVICE_ACCOUNT_JSON }}" > gdrive-sa.json
+
+          mkdir -p .dvc
+          cat <<EOF > .dvc/config.local
+          ['remote "gdrive"']
+          gdrive_use_service_account = true
+          gdrive_service_account_json_file_path = gdrive-sa.json
+          EOF
+
       - name: Pull data with DVC
         run: |
           uv run dvc pull --no-run-cache
