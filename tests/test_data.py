@@ -16,7 +16,7 @@ def test_preprocess_image(tmp_path: Path):
     img.save(input_img)
 
     # Act
-    _, _, oc, nw, nh, nc = preprocess_image(input_img, output_img)
+    _, __, oc, nw, nh, nc = preprocess_image(input_img, output_img)
 
     # Assert
     assert oc == 1
