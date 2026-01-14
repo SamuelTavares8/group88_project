@@ -43,8 +43,8 @@ jobs:
           echo "${{ secrets.DVC_GDRIVE_SERVICE_ACCOUNT_JSON }}" > gdrive-sa.json
 
           mkdir -p .dvc
-          cat <<EOF > .dvc/config.local
-          ['remote "gdrive"']
+          cat > .dvc/config.local <<'EOF'
+          ['remote "myremote"']
           gdrive_use_service_account = true
           gdrive_service_account_json_file_path = gdrive-sa.json
           EOF
