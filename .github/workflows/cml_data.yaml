@@ -40,10 +40,19 @@ jobs:
 
       - name: Configure DVC Google Drive authentication
         run: |
+          echo "🔎 creating .dvc directory"
           mkdir -p .dvc
 
+          echo "🔎 writing secret to .dvc/gdrive-sa.json"
           echo "${{ secrets.DVC_GDRIVE_SERVICE_ACCOUNT_JSON }}" > .dvc/gdrive-sa.json
 
+          echo "🔎 listing .dvc contents"
+          ls -lah .dvc
+
+          echo "🔎 size of json file"
+          wc -c .dvc/gdrive-sa.json
+
+          echo "🔎 writing config.local"
           cat > .dvc/config.local <<'EOF'
           ['remote "myremote"']
           gdrive_use_service_account = true
