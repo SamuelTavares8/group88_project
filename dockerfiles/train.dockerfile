@@ -2,7 +2,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-alpine AS base
 
 # copy lock + project metadata and install pinned deps
 COPY uv.lock uv.lock
-COPY pyproject.toml pyproject.toml
+COPY pyproject.toml pyproject.toml README.md ./
 RUN uv sync --frozen --no-install-project
 
 # copy source and install project (dev deps not installed)

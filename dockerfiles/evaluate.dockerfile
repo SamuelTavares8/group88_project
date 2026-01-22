@@ -2,7 +2,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-alpine AS base
 
 WORKDIR /app
 
-COPY uv.lock pyproject.toml ./
+COPY uv.lock pyproject.toml README.md ./
 RUN uv sync --locked --no-install-project
 
 COPY src/ src/
